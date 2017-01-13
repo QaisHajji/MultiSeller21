@@ -5,11 +5,17 @@ class ControllerLocalisationGeoZone extends Controller {
 	public function index() {
 		$this->load->language('localisation/geo_zone');
 
-		$this->document->setTitle($this->language->get('heading_title'));
 
-		$this->load->model('localisation/geo_zone');
 
-		$this->getList();
+		if ($this->customer->isSeller()) {
+				$this->document->setTitle($this->language->get('heading_title'));
+
+				$this->load->model('localisation/geo_zone');
+
+				$this->getList();
+			} else {
+		            $this->response->redirect($this->url->link('sellerprofile/sellerprofile', '', 'SSL'));
+		        }
 	}
 
 	public function add() {
@@ -276,6 +282,9 @@ class ControllerLocalisationGeoZone extends Controller {
 	}
 
 	protected function getForm() {
+		if (!$this->customer->isSeller()) {
+				$this->index();
+		}
 		$data['heading_title'] = $this->language->get('heading_title');
 
 		$data['text_form'] = !isset($this->request->get['geo_zone_id']) ? $this->language->get('text_add') : $this->language->get('text_edit');
@@ -391,5 +400,5 @@ class ControllerLocalisationGeoZone extends Controller {
         }
 	}
 
-	
+
 }
