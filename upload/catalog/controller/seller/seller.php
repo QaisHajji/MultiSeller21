@@ -13,7 +13,11 @@ class Controllersellerseller extends Controller
         $this->document->setTitle($this->language->get('heading_title'));
 
         $data['heading_title'] = $this->language->get('heading_title');
-
+        $data['text_products_number'] = $this->language->get('text_products_number');
+        $data['text_seller_name'] = $this->language->get('text_seller_name');
+        $data['text_store_name'] = $this->language->get('text_store_name');
+        $data['text_store_location'] = $this->language->get('text_store_location');
+        $data['text_sales'] = $this->language->get('text_sales');
         $data['text_index'] = $this->language->get('text_index');
         $data['text_empty'] = $this->language->get('text_empty');
 
@@ -46,7 +50,18 @@ class Controllersellerseller extends Controller
                 $data['categories'][$key]['name'] = $key;
             }
 
+            $this->load->model('sellerprofile/sellerprofile');
+            $data['seller_product_total'] = $this->model_sellerprofile_sellerprofile->getTotalProductsbysellerID($result['customer_id']);
+            $data['count_order_seller'] = $this->model_sellerprofile_sellerprofile->get_count_order_seller($result['customer_id']);
+            $data['get_address_seller'] = $this->model_sellerprofile_sellerprofile->get_address_seller($result['customer_id']);
+            
             $data['categories'][$key]['seller'][] = array(
+                'image' => $result['image'],
+                'seller_product_total' => $data['seller_product_total'],
+                'count_order_seller' => $data['count_order_seller'],
+                'get_address_seller' => $data['get_address_seller']['address'],
+                'get_company_seller' => $data['get_address_seller']['company'],
+                'get_custom_field_seller' => $data['get_address_seller']['custom_field'],
                 'name' => $result['name'],
                 'href' => $this->url->link('seller/seller/info', 'seller_id='.$result['customer_id']),
             );
@@ -135,7 +150,7 @@ class Controllersellerseller extends Controller
         if (isset($this->request->get['limit'])) {
     			$limit = (int)$this->request->get['limit'];
     		} else {
-    			$limit = (int)$this->config->get($this->config->get('config_theme') . '_product_limit');
+    			$limit = $this->config->get('config_product_limit');
     		}
 
         $data['breadcrumbs'] = array();
